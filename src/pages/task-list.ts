@@ -49,6 +49,7 @@ export abstract class TaskList {
       return true
     }else{
       this.router.navigateToRoute("userLogin");
+      alert('Please login first')
       return false
     }
   }
