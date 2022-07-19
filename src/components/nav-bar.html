@@ -1,0 +1,9 @@
+<template>
+  <nav class="nav-bar">
+    <div class="nav-bar__links">
+      <a repeat.for="nav of navigation" class="nav-bar__link ${nav.isActive ? 'nav-bar__link--active' : ''}" href.bind="nav.href">
+        ${nav.title}
+      </a>
+    </div>
+  </nav>
+</template>

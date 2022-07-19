@@ -1,0 +1,21 @@
+<template>
+  <div  style="width: 300px;" if.bind="!isLogin">
+    <form submit.trigger="login()">
+      <!-- Email input -->
+      <div>
+        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value.bind="username">
+        <label class="form-label" for="form2Example1">Username</label>
+      </div>
+      <!-- Password input -->
+      <div>
+        <input type="password" id="form2Example2" class="form-control" value.bind="password"/>
+        <label class="form-label" for="form2Example2">Password</label>
+      </div>
+        <!-- Submit button -->
+        <button disabled.bind="!canLogin" type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+  </div>
+  <div  style="width: 300px;" else>
+    <button type="submit" class="btn btn-primary" click.trigger="logout()">log out</button>
+  </div>
+</template>

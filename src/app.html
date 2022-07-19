@@ -1,0 +1,8 @@
+<template>
+  <require from="./style/layout/body.css"></require>
+  <require from="./components/nav-bar"></require>
+  <cy-nav-bar navigation.bind="router.navigation"></cy-nav-bar>
+  <main>
+    <router-view></router-view>
+  </main>
+</template>

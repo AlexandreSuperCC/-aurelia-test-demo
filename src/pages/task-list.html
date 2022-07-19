@@ -1,0 +1,23 @@
+<template>
+  <h3>Welcome ${user.toUpperCase()}</h3>
+  <h4>${route}</h4>
+  <form submit.trigger="addTodo()">
+    <div>
+      <input type="text" value.bind="todoDescription">
+    </div>
+    <div style="margin-top: 8px;">
+      <button type="submit" class="btn btn-success" disabled.bind="!todoDescription">Add Todo</button>
+    </div>
+  </form>
+
+  <ul>
+    <li repeat.for="task of tasks" style="margin: 8px 8px;">
+      <input type="checkbox" checked.bind="task.done">
+      <span css="text-decoration: ${task.done ? 'line-through' : 'none'}">
+        ${task.description}
+      </span>
+      <button class="btn btn-light btn-sm" click.trigger="removeTodo(task)">Remove</button>
+    </li>
+  </ul>
+
+</template>

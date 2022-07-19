@@ -1,0 +1,12 @@
+html,
+body,
+[aurelia-app] {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 8px 8px;
+
+  min-width: 290px;
+}

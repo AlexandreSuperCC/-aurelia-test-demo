@@ -1,0 +1,10 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+.nav-bar{
+  margin-bottom: 16px;
+}
+.nav-bar__link--active {
+  color: red;
+}
+.nav-bar__links>a{
+  margin: 8px 8px;
+}
