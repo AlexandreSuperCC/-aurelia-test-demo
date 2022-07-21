@@ -31,6 +31,13 @@ import {RouterConfiguration, Router} from 'aurelia-router';
           moduleId: PLATFORM.moduleName('./pages/login') 
         },
         { 
+          route: ['requestTest'],        
+          title: 'Test HTTP',     
+          name: 'requestTest',     
+          nav: true,
+          moduleId: PLATFORM.moduleName('./pages/request/request-view') 
+        },
+        { 
           route: 'unknown',        
           redirect:''
         },

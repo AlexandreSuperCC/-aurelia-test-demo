@@ -7,6 +7,8 @@ const project = require('./aurelia_project/aurelia.json');
 const { AureliaPlugin } = require('aurelia-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+//add by ycao 20220721 put files into entry 
+const glob = require('glob')
 
 // config helpers:
 const ensureArray = (config) => config && (Array.isArray(config) ? config : [config]) || [];
@@ -26,8 +28,11 @@ const cssRules = [
 
 
 module.exports = ({ production }, { analyze, hmr, port, host }) => ({
+  //add by ycao 20220720
+  // watch:true,
   resolve: {
-    extensions: ['.ts', '.js'],
+    //add by ycao 20220721
+    extensions: ['.ts', '.js','.jsx','.tsx'],
     modules: [srcDir, 'node_modules'],
 
     alias: {
@@ -42,70 +47,81 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     }
   },
   entry: {
-    app: [
-      // Uncomment next line if you need to support IE11
-      // 'promise-polyfill/src/polyfill',
-      'aurelia-bootstrapper'
-    ],
     //add by ycao 20220716 app.ts will only contain business modules, this part doesn't change very often so client-side caching can be effectively used
-    // vendors:[
-    //   'aurelia-router'
-    // ]
+    //suiv: webpack is not recommended entire folder, the entry value should resolve to a specific file, or a list of specific files.
+    framwork: [
+      "aurelia-animator-css",
+      "aurelia-bootstrapper",
+      "aurelia-fetch-client",
+      "aurelia-http-client",
+      "bootstrap",
+      // "glob",
+      "jquery",
+    ],
+    //business modules are added here:
+    login: './src/pages/login.ts',
+    task: [
+      './src/pages/task-list.ts',
+      './src/pages/diapason.ts',
+      './src/pages/person.ts',
+      './src/models/task.ts',
+    ],
+    'components': glob.sync('./src/components/*.ts'),
+    'services/request-service': './src/services/request-service.ts'
   },
   mode: production ? 'production' : 'development',
   output: {
     path: outDir,
     publicPath: baseUrl,
-    filename: production ? '[name].[chunkhash].bundle.js' : '[name].[fullhash].bundle.js',
+    filename: production ? '[name].js' : '[name].js',
     chunkFilename: production ? '[name].[chunkhash].chunk.js' : '[name].[fullhash].chunk.js'
   },
-  // optimization: {
-  //   //change by ycao 20220716
-  //   runtimeChunk: false,  // separates the runtime chunk, required for long term cacheability
-  //   // moduleIds is the replacement for HashedModuleIdsPlugin and NamedModulesPlugin deprecated in https://github.com/webpack/webpack/releases/tag/v4.16.0
-  //   // changes module id's to use hashes be based on the relative path of the module, required for long term cacheability
-  //   moduleIds: 'deterministic',
-  //   // Use splitChunks to breakdown the App/Aurelia bundle down into smaller chunks
-  //   // https://webpack.js.org/plugins/split-chunks-plugin/
-  //   splitChunks: {
-  //     hidePathInfo: true, // prevents the path from being used in the filename when using maxSize
-  //     chunks: "initial",
-  //     // sizes are compared against source before minification
-
-  //     // This is the HTTP/1.1 optimized maxSize.
-  //     maxSize: 200000, // splits chunks if bigger than 200k, adjust as required (maxSize added in webpack v4.15)
-
-
-  //     cacheGroups: {
-  //       default: false, // Disable the built-in groups default & vendors (vendors is redefined below)
-
-  //       // This is the HTTP/1.1 optimized cacheGroup configuration.
-  //       vendors: { // picks up everything from node_modules as long as the sum of node modules is larger than minSize
-  //         test: /[\\/]node_modules[\\/]/,
-  //         name: 'vendors',
-  //         priority: 19,
-  //         enforce: true, // causes maxInitialRequests to be ignored, minSize still respected if specified in cacheGroup
-  //         minSize: 30000 // use the default minSize
-  //       },
-  //       vendorsAsync: { // vendors async chunk, remaining asynchronously used node modules as single chunk file
-  //         test: /[\\/]node_modules[\\/]/,
-  //         name: 'vendors.async',
-  //         chunks: 'async',
-  //         priority: 9,
-  //         reuseExistingChunk: true,
-  //         minSize: 10000  // use smaller minSize to avoid too much potential bundle bloat due to module duplication.
-  //       },
-  //       commonsAsync: { // commons async chunk, remaining asynchronously used modules as single chunk file
-  //         name: 'commons.async',
-  //         minChunks: 2, // Minimum number of chunks that must share a module before splitting
-  //         chunks: 'async',
-  //         priority: 0,
-  //         reuseExistingChunk: true,
-  //         minSize: 10000  // use smaller minSize to avoid too much potential bundle bloat due to module duplication.
-  //       }
-  //     }
-  //   }
-  // },
+  // add by ycao 20220720
+  optimization:{
+    //take out the necessary files
+    splitChunks:{
+      cacheGroups: {
+        //issue!!! adding a directory before 'name' makes the production in browser not working, but it works when adding in entry
+        
+        //framework modules can also be splitted here:
+        // framework: {
+        //   name: 'framework',
+        //   test: /[\\/]node_modules[\\/]/,
+        //   priority: -10,//A larger value indicates that this scheme is preferred when extracting modules. Default value is 0
+        //   chunks:"all",//The value 'initial' indicates how many times xxx is loaded asynchronously or synchronously in the project, then how many times the module xxx will be extracted and packaged into different files. The core-js library is loaded into every file in the project, so it will be extracted multiple times.
+        //   enforce: true
+        // },
+        // services: {
+        //   name: 'services',
+        //   test: /[\\/]src[\\/]services[\\/]/,
+        //   priority: 0,
+        //   chunks:"all",
+        //   enforce: true
+        // },
+        // bootstrap: {
+        //   name: 'bootstrap',
+        //   test: /[\\/]node_modules[\\/]bootstrap[\\/]/,
+        //   priority: 0,
+        //   chunks:"all",
+        //   enforce: true
+        // },
+        // jquery: {
+        //   name: 'jquery',
+        //   test: /[\\/]node_modules[\\/]jquery[\\/]/,
+        //   priority: 0,
+        //   chunks:"all",
+        //   enforce: true
+        // },
+        // aureliaFetchClient: {
+        //   name: 'aurelia-fetch-client',
+        //   test: /[\\/]node_modules[\\/]aurelia-fetch-client[\\/]/,
+        //   priority: 0,
+        //   chunks:"all",
+        //   enforce: true
+        // },
+      }
+    },
+  },
   performance: { hints: false },
   devServer: {
     // serve index.html for all 404 (required for push-state)
@@ -113,7 +129,15 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     open: project.platform.open,
     hot: hmr || project.platform.hmr,
     port: port || project.platform.port,
-    host: host
+    host: host,
+    //add by ycao 20220721 solve cross-domain which is browser-intercepted action
+    proxy: {
+      '/api': {
+           target: 'http://localhost:8080',
+           router: () => 'http://localhost:8085',
+           logLevel: 'debug' /*optional*/
+      }
+   }
   },
   devtool: production ? undefined : 'cheap-module-source-map',
   module: {
@@ -122,8 +146,8 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
       // only when the issuer is a .js/.ts file, so the loaders are not applied inside html templates
       {
         test: /\.css$/i,
-        issuer: { not: [ /\.html$/i ] },
-        use: [ { loader: MiniCssExtractPlugin.loader }, ...cssRules ]
+        issuer: { not: [/\.html$/i] },
+        use: [{ loader: MiniCssExtractPlugin.loader }, ...cssRules]
       },
       {
         test: /\.css$/i,
@@ -138,15 +162,18 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
       { test: /\.ts$/, loader: "ts-loader" },
       // embed small images and fonts as Data Urls and larger ones as files:
       { test: /\.(png|svg|jpg|jpeg|gif)$/i, type: 'asset' },
-      { test: /\.(woff|woff2|ttf|eot|svg|otf)(\?v=[0-9]\.[0-9]\.[0-9])?$/i,  type: 'asset' },
-      { test: /environment\.json$/i, use: [
-        {loader: "app-settings-loader", options: {env: production ? 'production' : 'development' }},
-      ]}
+      { test: /\.(woff|woff2|ttf|eot|svg|otf)(\?v=[0-9]\.[0-9]\.[0-9])?$/i, type: 'asset' },
+      {
+        test: /environment\.json$/i, use: [
+          { loader: "app-settings-loader", options: { env: production ? 'production' : 'development' } },
+        ]
+      }
     ]
   },
   plugins: [
     new DuplicatePackageCheckerPlugin(),
     new AureliaPlugin(),
+    //generate html files after webpack builds, and import the built entry js files into the generated html files
     new HtmlWebpackPlugin({
       template: 'index.ejs',
       metadata: {
@@ -156,7 +183,8 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     }),
     // ref: https://webpack.js.org/plugins/mini-css-extract-plugin/
     new MiniCssExtractPlugin({ // updated to match the naming conventions for the js files
-      filename: production ? '[name].[contenthash].bundle.css' : '[name].[fullhash].bundle.css',
+      //change by ycao 20220720 
+      filename: production ? '[name].css' : '[name].css',
       chunkFilename: production ? '[name].[contenthash].chunk.css' : '[name].[fullhash].chunk.css'
     }),
     new CopyWebpackPlugin({
@@ -171,6 +199,10 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
      * remove those before the webpack build. In that case consider disabling the plugin, and instead use something like
      * `del` (https://www.npmjs.com/package/del), or `rimraf` (https://www.npmjs.com/package/rimraf).
      */
-    new CleanWebpackPlugin()
+    //add by ycao 20220721 remove licence
+     new CleanWebpackPlugin({
+      protectWebpackAssets: false,
+      cleanAfterEveryBuildPatterns: ['*.LICENSE.txt'],
+    }),
   ]
 });
