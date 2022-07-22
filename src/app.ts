@@ -45,6 +45,13 @@ import {RouterConfiguration, Router} from 'aurelia-router';
           moduleId: PLATFORM.moduleName('./pages/plat/plat') 
         },
         { 
+          route: ['ace'],        
+          title: 'Ace-Editor',     
+          name: 'aceEditor',     
+          nav: true,
+          moduleId: PLATFORM.moduleName('./pages/ace/ace-input') 
+        },
+        { 
           route: 'unknown',        
           redirect:''
         },

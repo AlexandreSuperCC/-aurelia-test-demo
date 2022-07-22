@@ -49,14 +49,21 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
   entry: {
     //add by ycao 20220716 app.ts will only contain business modules, this part doesn't change very often so client-side caching can be effectively used
     //suiv: webpack is not recommended entire folder, the entry value should resolve to a specific file, or a list of specific files.
-    framwork: [
-      "aurelia-animator-css",
-      "aurelia-bootstrapper",
-      "aurelia-fetch-client",
-      "aurelia-http-client",
-      "bootstrap",
-      // "glob",
-      "jquery",
+    // framwork: [
+    //   "aurelia-animator-css",
+    //   "aurelia-bootstrapper",
+    //   "aurelia-fetch-client",
+    //   "aurelia-http-client",
+    //   "bootstrap",
+    //   // "glob",
+    //   "jquery",
+    //   "ace-builds",
+    //   "file-loader",
+    // ],
+    app: [
+      // Uncomment next line if you need to support IE11
+      // 'promise-polyfill/src/polyfill',
+      'aurelia-bootstrapper'
     ],
     //business modules are added here:
     login: './src/pages/login.ts',
@@ -66,8 +73,20 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
       './src/pages/person.ts',
       './src/models/task.ts',
     ],
-    'components': glob.sync('./src/components/*.ts'),
-    'services/request-service': './src/services/request-service.ts'
+    plat: [
+      './src/pages/plat/plat.ts',
+      './src/models/plat.ts',
+      './src/components/plat-item.ts'
+    ],
+    ace:[
+      './src/pages/ace/ace-input.ts',
+    ],
+    components: [
+      './src/components/nav-bar.ts'
+    ],
+    'services/request-service': './src/services/request-service.ts',
+    sources: glob.sync('./src/sources/*.json'),
+
   },
   mode: production ? 'production' : 'development',
   output: {
