@@ -1,0 +1,14 @@
+<template>
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src.bind="plat.imgurl" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">${plat.name}</h5>
+            <p class="card-text">>${plat.content}</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Note: ${plat.rate}</li>
+            <li class="list-group-item">Price: ${plat.price}</li>
+        </ul>
+    </div>
+
+</template>

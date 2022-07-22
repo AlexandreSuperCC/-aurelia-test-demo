@@ -1,8 +1,12 @@
 <template>
   <require from="./style/layout/body.css"></require>
   <require from="./components/nav-bar"></require>
-  <cy-nav-bar navigation.bind="router.navigation"></cy-nav-bar>
+  <div class="top-menu">
+    <cy-nav-bar navigation.bind="router.navigation"></cy-nav-bar>
+  </div>
   <main>
-    <router-view></router-view>
+    <div class="main">
+      <router-view></router-view>
+    </div>
   </main>
 </template>

@@ -84,13 +84,13 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
         //issue!!! adding a directory before 'name' makes the production in browser not working, but it works when adding in entry
         
         //framework modules can also be splitted here:
-        // framework: {
-        //   name: 'framework',
-        //   test: /[\\/]node_modules[\\/]/,
-        //   priority: -10,//A larger value indicates that this scheme is preferred when extracting modules. Default value is 0
-        //   chunks:"all",//The value 'initial' indicates how many times xxx is loaded asynchronously or synchronously in the project, then how many times the module xxx will be extracted and packaged into different files. The core-js library is loaded into every file in the project, so it will be extracted multiple times.
-        //   enforce: true
-        // },
+        framework: {
+          name: 'framework',
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,//A larger value indicates that this scheme is preferred when extracting modules. Default value is 0
+          chunks:"all",//The value 'initial' indicates how many times xxx is loaded asynchronously or synchronously in the project, then how many times the module xxx will be extracted and packaged into different files. The core-js library is loaded into every file in the project, so it will be extracted multiple times.
+          enforce: true
+        },
         // services: {
         //   name: 'services',
         //   test: /[\\/]src[\\/]services[\\/]/,

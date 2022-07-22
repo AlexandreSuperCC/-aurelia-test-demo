@@ -38,6 +38,13 @@ import {RouterConfiguration, Router} from 'aurelia-router';
           moduleId: PLATFORM.moduleName('./pages/request/request-view') 
         },
         { 
+          route: ['plat'],        
+          title: 'Plat Info',     
+          name: 'platInfo',     
+          nav: true,
+          moduleId: PLATFORM.moduleName('./pages/plat/plat') 
+        },
+        { 
           route: 'unknown',        
           redirect:''
         },

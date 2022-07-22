@@ -1,6 +1,9 @@
-@import "~bootstrap/dist/css/bootstrap.css";
-.nav-bar{
-  margin-bottom: 16px;
+.top-menu{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 35px;
+  background-color: rgb(230, 240, 248);
 }
 .nav-bar__link--active {
   color: red;
