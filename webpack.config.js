@@ -49,43 +49,45 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
   entry: {
     //add by ycao 20220716 app.ts will only contain business modules, this part doesn't change very often so client-side caching can be effectively used
     //suiv: webpack is not recommended entire folder, the entry value should resolve to a specific file, or a list of specific files.
-    // framwork: [
-    //   "aurelia-animator-css",
-    //   "aurelia-bootstrapper",
-    //   "aurelia-fetch-client",
-    //   "aurelia-http-client",
-    //   "bootstrap",
-    //   // "glob",
-    //   "jquery",
-    //   "ace-builds",
-    //   "file-loader",
+    framwork: [
+      "aurelia-animator-css",
+      "aurelia-bootstrapper",
+      "aurelia-fetch-client",
+      "aurelia-http-client",
+      "bootstrap",
+      // "glob",
+      "jquery",
+      "ace-builds",
+      // "file-loader",
+    ],
+    // app: [
+    //   // Uncomment next line if you need to support IE11
+    //   // 'promise-polyfill/src/polyfill',
+    //   'aurelia-bootstrapper'
     // ],
-    app: [
-      // Uncomment next line if you need to support IE11
-      // 'promise-polyfill/src/polyfill',
-      'aurelia-bootstrapper'
-    ],
-    //business modules are added here:
-    login: './src/pages/login.ts',
-    task: [
-      './src/pages/task-list.ts',
-      './src/pages/diapason.ts',
-      './src/pages/person.ts',
-      './src/models/task.ts',
-    ],
-    plat: [
-      './src/pages/plat/plat.ts',
-      './src/models/plat.ts',
-      './src/components/plat-item.ts'
-    ],
-    ace:[
-      './src/pages/ace/ace-input.ts',
-    ],
-    components: [
-      './src/components/nav-bar.ts'
-    ],
-    'services/request-service': './src/services/request-service.ts',
-    sources: glob.sync('./src/sources/*.json'),
+    // login: './src/pages/login.ts',
+    // task: [
+    //   './src/pages/task-list.ts',
+    //   './src/pages/diapason.ts',
+    //   './src/pages/person.ts',
+    //   './src/models/task.ts',
+    // ],
+    // plat: [
+    //   './src/pages/plat/plat.ts',
+    //   './src/models/plat.ts',
+    //   './src/components/plat-item.ts'
+    // ],
+    // ace:[
+    //   './src/pages/ace/ace-input.ts',
+    // ],
+    // components: [
+    //   './src/components/nav-bar.ts'
+    // ],
+    // 'services/request-service': './src/services/request-service.ts',
+    
+    //no dependence modules are added here: 
+    //pay attention, the file will exist again in the chunk made with app.ts, unless we change postion to split it in cachegroups
+    // sources: glob.sync('./src/sources/*.json'),
 
   },
   mode: production ? 'production' : 'development',
@@ -93,7 +95,7 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     path: outDir,
     publicPath: baseUrl,
     filename: production ? '[name].js' : '[name].js',
-    chunkFilename: production ? '[name].[chunkhash].chunk.js' : '[name].[fullhash].chunk.js'
+    chunkFilename: production ? '[name].chunk.js' : '[name].chunk.js'
   },
   // add by ycao 20220720
   optimization:{
@@ -103,20 +105,20 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
         //issue!!! adding a directory before 'name' makes the production in browser not working, but it works when adding in entry
         
         //framework modules can also be splitted here:
-        framework: {
-          name: 'framework',
-          test: /[\\/]node_modules[\\/]/,
-          priority: -10,//A larger value indicates that this scheme is preferred when extracting modules. Default value is 0
-          chunks:"all",//The value 'initial' indicates how many times xxx is loaded asynchronously or synchronously in the project, then how many times the module xxx will be extracted and packaged into different files. The core-js library is loaded into every file in the project, so it will be extracted multiple times.
-          enforce: true
-        },
-        // services: {
-        //   name: 'services',
-        //   test: /[\\/]src[\\/]services[\\/]/,
-        //   priority: 0,
-        //   chunks:"all",
+        // framework: {
+        //   name: 'framework',
+        //   test: /[\\/]node_modules[\\/]/,
+        //   priority: -10,//A larger value indicates that this scheme is preferred when extracting modules. Default value is 0
+        //   chunks:"all",//The value 'initial' indicates how many times xxx is loaded asynchronously or synchronously in the project, then how many times the module xxx will be extracted and packaged into different files. The core-js library is loaded into every file in the project, so it will be extracted multiple times.
         //   enforce: true
         // },
+        jsonFile: {
+          name: 'jsonFile',
+          test: /[\\/]src[\\/]sources[\\/]/,
+          priority: 0,
+          chunks:"all",
+          enforce: true
+        },
         // bootstrap: {
         //   name: 'bootstrap',
         //   test: /[\\/]node_modules[\\/]bootstrap[\\/]/,
