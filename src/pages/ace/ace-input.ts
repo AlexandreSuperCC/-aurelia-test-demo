@@ -1,6 +1,7 @@
 import { autoinject } from 'aurelia-framework';
 import * as ace from 'ace-builds'
-import 'ace-builds/webpack-resolver'
+
+// import 'ace-builds/webpack-resolver'
 import 'ace-builds/src-noconflict/theme-monokai'
 import 'ace-builds/src-noconflict/mode-javascript'
 import 'ace-builds/src-noconflict/ext-language_tools'
@@ -34,7 +35,9 @@ export class AceInput {
             minLines: 10,
             mode: this.modePath,
             fontSize: 14,
-            tabSize: 4
+            tabSize: 4,
+            //change by ycao 20220727 remove [import 'ace-builds/webpack-resolver'] to stop pollution
+            useWorker:false,
         });
         this.editor.setTheme("ace/theme/monokai");
         this.editor.$blockScrolling = Infinity

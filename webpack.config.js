@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -50,41 +51,15 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     //add by ycao 20220716 app.ts will only contain business modules, this part doesn't change very often so client-side caching can be effectively used
     //suiv: webpack is not recommended entire folder, the entry value should resolve to a specific file, or a list of specific files.
     framwork: [
-      "aurelia-animator-css",
       "aurelia-bootstrapper",
-      "aurelia-fetch-client",
-      "aurelia-http-client",
-      "bootstrap",
-      // "glob",
-      "jquery",
-      "ace-builds",
-      // "file-loader",
+      "ace-builds",  
+      // attention! The following four dependences are not included in the "ace-builds" 
+      'ace-builds/src-noconflict/theme-monokai',
+      'ace-builds/src-noconflict/mode-javascript',
+      'ace-builds/src-noconflict/ext-language_tools',
+      'ace-builds/src-noconflict/ace.js',
     ],
-    // app: [
-    //   // Uncomment next line if you need to support IE11
-    //   // 'promise-polyfill/src/polyfill',
-    //   'aurelia-bootstrapper'
-    // ],
     // login: './src/pages/login.ts',
-    // task: [
-    //   './src/pages/task-list.ts',
-    //   './src/pages/diapason.ts',
-    //   './src/pages/person.ts',
-    //   './src/models/task.ts',
-    // ],
-    // plat: [
-    //   './src/pages/plat/plat.ts',
-    //   './src/models/plat.ts',
-    //   './src/components/plat-item.ts'
-    // ],
-    // ace:[
-    //   './src/pages/ace/ace-input.ts',
-    // ],
-    // components: [
-    //   './src/components/nav-bar.ts'
-    // ],
-    // 'services/request-service': './src/services/request-service.ts',
-    
     //no dependence modules are added here: 
     //pay attention, the file will exist again in the chunk made with app.ts, unless we change postion to split it in cachegroups
     // sources: glob.sync('./src/sources/*.json'),
@@ -95,51 +70,32 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     path: outDir,
     publicPath: baseUrl,
     filename: production ? '[name].js' : '[name].js',
-    chunkFilename: production ? '[name].chunk.js' : '[name].chunk.js'
+    chunkFilename: production ? '[name].chunk.js' : '[name].chunk.js',
+    // add by ycao 20220726 change path for output asset
+    assetModuleFilename: 'assets/[name][ext]'
+
   },
   // add by ycao 20220720
   optimization:{
     //take out the necessary files
     splitChunks:{
+      // chunks: 'all',
       cacheGroups: {
         //issue!!! adding a directory before 'name' makes the production in browser not working, but it works when adding in entry
-        
-        //framework modules can also be splitted here:
-        // framework: {
-        //   name: 'framework',
-        //   test: /[\\/]node_modules[\\/]/,
-        //   priority: -10,//A larger value indicates that this scheme is preferred when extracting modules. Default value is 0
-        //   chunks:"all",//The value 'initial' indicates how many times xxx is loaded asynchronously or synchronously in the project, then how many times the module xxx will be extracted and packaged into different files. The core-js library is loaded into every file in the project, so it will be extracted multiple times.
-        //   enforce: true
-        // },
         jsonFile: {
-          name: 'jsonFile',
+          name: 'assets/json/jsonFile',
           test: /[\\/]src[\\/]sources[\\/]/,
           priority: 0,
           chunks:"all",
           enforce: true
         },
-        // bootstrap: {
-        //   name: 'bootstrap',
-        //   test: /[\\/]node_modules[\\/]bootstrap[\\/]/,
-        //   priority: 0,
-        //   chunks:"all",
-        //   enforce: true
-        // },
-        // jquery: {
-        //   name: 'jquery',
-        //   test: /[\\/]node_modules[\\/]jquery[\\/]/,
-        //   priority: 0,
-        //   chunks:"all",
-        //   enforce: true
-        // },
-        // aureliaFetchClient: {
-        //   name: 'aurelia-fetch-client',
-        //   test: /[\\/]node_modules[\\/]aurelia-fetch-client[\\/]/,
-        //   priority: 0,
-        //   chunks:"all",
-        //   enforce: true
-        // },
+        'kendo-aurelia': {
+          name: 'kendo-aurelia',
+          test: /[\\/]node_modules[\\/]aurelia-kendoui-bridge[\\/]|[\\/]node_modules[\\/]@progress[\\/]kendo-ui[\\/]/,
+          priority: 0,
+          chunks:"all",
+          enforce: true
+        }
       }
     },
   },
@@ -160,7 +116,9 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
       }
    }
   },
-  devtool: production ? undefined : 'cheap-module-source-map',
+  //add by ycao 20220727 get map to debug
+  // devtool: production ? undefined : 'cheap-module-source-map',
+  devtool: production ? 'cheap-module-source-map' : 'cheap-module-source-map',
   module: {
     rules: [
       // CSS required in JS/TS files should use the style-loader that auto-injects it into the website
@@ -179,11 +137,18 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
       },
       // Skip minimize in production build to avoid complain on unescaped < such as
       // <span>${ c < 5 ? c : 'many' }</span>
-      { test: /\.html$/i, loader: 'html-loader', options: { minimize: false } },
+      { test: /\.html$/i, loader: 'html-loader', options: { minimize: false } },//This is true by default in production mode.
       { test: /\.ts$/, loader: "ts-loader" },
       // embed small images and fonts as Data Urls and larger ones as files:
       { test: /\.(png|svg|jpg|jpeg|gif)$/i, type: 'asset' },
-      { test: /\.(woff|woff2|ttf|eot|svg|otf)(\?v=[0-9]\.[0-9]\.[0-9])?$/i, type: 'asset' },
+      { 
+        test: /\.(woff|woff2|ttf|eot|svg|otf)(\?v=[0-9]\.[0-9]\.[0-9])?$/i, 
+        type: 'asset',
+        // add by ycao 20220726 change path for output asset
+        generator:{
+          filename: 'assets/fonts/[hash][ext]'
+        }
+       },
       {
         test: /environment\.json$/i, use: [
           { loader: "app-settings-loader", options: { env: production ? 'production' : 'development' } },
@@ -206,7 +171,7 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     new MiniCssExtractPlugin({ // updated to match the naming conventions for the js files
       //change by ycao 20220720 
       filename: production ? '[name].css' : '[name].css',
-      chunkFilename: production ? '[name].[contenthash].chunk.css' : '[name].[fullhash].chunk.css'
+      chunkFilename: production ? '[name].chunk.css' : '[name].chunk.css'
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -225,5 +190,9 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
       protectWebpackAssets: false,
       cleanAfterEveryBuildPatterns: ['*.LICENSE.txt'],
     }),
+    //add by ycao 20220725 optimize webpack ace pollution in production
+    // new webpack.NormalModuleReplacementPlugin(/^file-loader\?esModule=false!(.*)/, (res) => {
+    //   res.request = res.request.replace(/^file-loader\?esModule=false!/, 'file-loader?esModule=false&outputPath=assets/js/ace-editor-modes!')
+    // }),
   ]
 });

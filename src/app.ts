@@ -35,7 +35,7 @@ import {RouterConfiguration, Router} from 'aurelia-router';
           title: 'Test HTTP',     
           name: 'requestTest',     
           nav: true,
-          moduleId: PLATFORM.moduleName('./pages/request/request-view','request') 
+          moduleId: PLATFORM.moduleName('./pages/request/request-view','ajax/request') 
         },
         { 
           route: ['plat'],        
@@ -50,6 +50,13 @@ import {RouterConfiguration, Router} from 'aurelia-router';
           name: 'aceEditor',     
           nav: true,
           moduleId: PLATFORM.moduleName('./pages/ace/ace-input','ace') 
+        },
+        { 
+          route: ['staff'],        
+          title: 'Group-Member',     
+          name: 'groupMember',     
+          nav: true,
+          moduleId: PLATFORM.moduleName('./pages/employee/staff-info','staff') 
         },
         { 
           route: 'unknown',        
